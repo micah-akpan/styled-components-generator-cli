@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+
 function getDeclarations(ruleStyle) {
   let declarations = []
   let foundDeclaration = true
@@ -31,9 +33,9 @@ function generateStyledComponents(styles) {
   let components = []
   for (let i = 0; i < styles.length; i++) {
     const style = styles[i]
-    let component = `styled.${style.selector}\`
+    let component = `const ${style.selector}Component = styled.${style.selector}\`
     ${style.declarations.map(declaration => {
-      return `${declaration.prop}: ${declaration.value}`
+      return `\t${declaration.prop}: ${declaration.value};`
     }).join('\n')}
   \`
   `
@@ -42,8 +44,19 @@ function generateStyledComponents(styles) {
   return components;
 }
 
+function displayInfo(msg, level = 'error') {
+    let info = ''
+    if (level == 'error') {
+      info = chalk.red.bold(`Operation Failed: ${msg}`)
+    } else if (level == 'normal') {
+      info = chalk.green.bold(`${msg}`)
+    }
+    return info
+}
+
 export {
   getDeclarations,
   generateStyles,
-  generateStyledComponents
+  generateStyledComponents,
+  displayInfo
 }
