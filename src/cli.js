@@ -51,20 +51,10 @@ function convertCSS(cssFile, options) {
       const componentStr = components.join('\n')
 
       if (options.dest) {
-        const destination = fs.createWriteStream(options.dest)
-        destination.write(componentStr, 'utf-8', (error) => {
-          if (error) {
-            log(displayInfo('Does the specified destination exist?'))
-          } else {
-            log(displayInfo('Operation Successful: The components have been written to specified file', 'normal'))
-          }
-          destination.close()
-        })
+        writeToFile(options.dest, componentStr)
         return;
-
-       
       }
-      
+
       log(displayInfo(componentStr, 'normal'))
     })
 
@@ -79,4 +69,16 @@ function convertCSS(cssFile, options) {
   } catch (error) {
 
   }
+}
+
+function writeToFile(file, component) {
+  const destination = fs.createWriteStream(file)
+  destination.write(component, 'utf-8', (error) => {
+    if (error) {
+      log(displayInfo('Does the specified destination exist?'))
+    } else {
+      log(displayInfo('Operation Successful: The components have been written to specified file', 'normal'))
+    }
+    destination.close()
+  })
 }
