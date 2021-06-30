@@ -16,17 +16,11 @@ function getDeclarations(ruleStyle) {
 }
 
 function generateStyles(rules) {
-  // returns an hash of selectors to their respective declarations
-  let styles = []
-  for (let i = 0; i < rules.length; i++) {
-    let rule = rules[i]
-    let ruleStyle = rule.style
-    let style = { selector: rule.selectorText }
-    let declarations = getDeclarations(ruleStyle)
-    style.declarations = declarations;
-    styles.push(style)
-  }
-  return styles;
+  // returns an map of selectors to their respective declarations
+  return rules.map((rule) => ({
+    selector: rule.selectorText,
+    declarations: getDeclarations(rule.style)
+  }))
 }
 
 function generateStyledComponents(styles) {
@@ -45,13 +39,13 @@ function generateStyledComponents(styles) {
 }
 
 function displayInfo(msg, level = 'error') {
-    let info = ''
-    if (level == 'error') {
-      info = chalk.red.bold(`Operation Failed: ${msg}`)
-    } else if (level == 'normal') {
-      info = chalk.green.bold(`${msg}`)
-    }
-    return info
+  let info = ''
+  if (level == 'error') {
+    info = chalk.red.bold(`Operation Failed: ${msg}`)
+  } else if (level == 'normal') {
+    info = chalk.green.bold(msg)
+  }
+  return info
 }
 
 export {

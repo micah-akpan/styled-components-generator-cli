@@ -4,7 +4,7 @@
   "description": "An intuitive tool to migrate stylesheet written in several CSS dialects to Styled Components",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,10 @@
   "bin": {
     "@your_npm_username/sc-gen": "bin/sc-gen",
     "sc-gen": "bin/sc-gen"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "jest": "^27.0.6"
   }
 }
