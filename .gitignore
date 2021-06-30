@@ -105,3 +105,7 @@ dist
 
 # project roadmap
 .roadmap
+
+# project test artifacts
+src/file.css
+hello.js

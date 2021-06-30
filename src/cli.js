@@ -2,17 +2,21 @@ import arg from 'arg'
 import path from 'path'
 import fs from 'fs'
 import CSSOM from 'cssom'
-import { generateStyles, generateStyledComponents } from './utils'
-import chalk from 'chalk'
+import { generateStyles, generateStyledComponents, displayInfo } from './utils'
+
+const log = console.log
 
 function parseArgumentsIntoOpts(rawArgs) {
   const args = arg(
     {
       '--type': String,
       '--quiet': Boolean,
-      '--file': String,
+      '--source': String,
+      '--dest': String,
       '-t': '--type',
       '-q': '--quiet',
+      '-s': '--source',
+      '-d': '--dest'
     },
     {
       argv: rawArgs.slice(2)
@@ -22,20 +26,20 @@ function parseArgumentsIntoOpts(rawArgs) {
   return {
     type: args['--type'],
     quiet: args['--quiet'] || false,
-    file: args['--file']
+    source: args['--source'],
+    dest: args['--dest']
   }
 }
 
 export function cli(args) {
   let options = parseArgumentsIntoOpts(args)
   if (!options.type) {
-    console.log(chalk.green.bold('You did not specify --type. CSS will be used as the default type'))
+    log(displayInfo('You did not specify --type. CSS will be used as the default type', 'normal'))
   }
-  convertCSS(options.file)
+  convertCSS(options.source, options)
 }
 
-function convertCSS(cssFile) {
-  // let filePath = path.resolve(__dirname, cssFile)
+function convertCSS(cssFile, options) {
   try {
     let stream = fs.createReadStream(cssFile, { encoding: 'utf-8' })
     stream.on('data', (data) => {
@@ -43,13 +47,22 @@ function convertCSS(cssFile) {
 
       const styles = generateStyles(cssString.cssRules)
       const components = generateStyledComponents(styles)
+
+      const componentStr = components.join('\n')
+
+      if (options.dest) {
+        writeToFile(options.dest, componentStr)
+        return;
+      }
+
+      log(displayInfo(componentStr, 'normal'))
     })
 
     stream.on('error', (err) => {
       if (err.code == 'ENOENT') {
-        chalk.red.bold('the provided file does not exist. please check the path and try again')
+        log(displayInfo('the provided file does not exist. please check the path and try again'))
       } else if (err.code == 'EACCES') {
-        console.log(chalk.red.bold('You do not have the necessary permission to this file'))
+        log(displayInfo('You do not have the necessary permission to this file'))
       }
     })
     stream.read()
@@ -58,3 +71,14 @@ function convertCSS(cssFile) {
   }
 }
 
+function writeToFile(file, component) {
+  const destination = fs.createWriteStream(file)
+  destination.write(component, 'utf-8', (error) => {
+    if (error) {
+      log(displayInfo('Does the specified destination exist?'))
+    } else {
+      log(displayInfo('Operation Successful: The components have been written to specified file', 'normal'))
+    }
+    destination.close()
+  })
+}
