@@ -85,4 +85,36 @@ describe('Utils', () => {
       expect(info).toEqual('success')
     })
   })
+
+  describe('getLastSelector', () => {
+    test('should get last selector from a string of selectors', () => {
+      let lastSelector = Utils.getLastSelector('a > b > c')
+      expect(lastSelector).toEqual('c')
+    })
+
+    test('should get last selector from a string of selectors', () => {
+      let lastSelector = Utils.getLastSelector('a + b ~ c')
+      expect(lastSelector).toEqual('c')
+    })
+
+    test('should get last selector from a string of selectors', () => {
+      let lastSelector = Utils.getLastSelector('a  b  c')
+      expect(lastSelector).toEqual('c')
+    })
+  })
+
+  describe('removePrefixInSelector', () => {
+    test('should remove class prefix in selector', () => {
+      let selector = Utils.removePrefixInSelector('.selector')
+      expect(selector).toEqual('selector')
+    })
+    test('should remove id prefix in selector', () => {
+      let selector = Utils.removePrefixInSelector('#selector')
+      expect(selector).toEqual('selector')
+    })
+    test('should return the selector without a prefix', () => {
+      let selector = Utils.removePrefixInSelector('selector')
+      expect(selector).toEqual('selector')
+    })
+  })
 })
