@@ -26,8 +26,9 @@ export const generateStyles = (rules) => {
 export const generateStyledComponents = (styles) => {
   let components = []
   for (let i = 0; i < styles.length; i++) {
-    const style = styles[i]
-    let component = `const ${style.selector}Component = styled.${style.selector}\`
+    let style = styles[i]
+    let selector = removePrefixInSelector(getLastSelector(style.selector))
+    let component = `const ${selector}Component = styled.${selector}\`
     ${style.declarations.map(declaration => {
       return `\t${declaration.prop}: ${declaration.value};`
     }).join('\n')}
