@@ -16,7 +16,7 @@ export const getDeclarations = (ruleStyle) => {
 }
 
 export const generateStyles = (rules) => {
-  // returns an map of selectors to their respective declarations
+  // returns a map of selectors to their respective declarations
   return rules.map((rule) => ({
     selector: rule.selectorText,
     declarations: getDeclarations(rule.style)

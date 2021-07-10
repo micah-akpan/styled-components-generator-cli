@@ -3,6 +3,8 @@ import fs from 'fs'
 import CSSOM from 'cssom'
 import { generateStyles, generateStyledComponents, displayInfo } from './utils'
 import { version } from '../package.json'
+import scssParser from 'scss-parser'
+import createQueryWrapper from 'query-ast'
 
 const log = console.log
 
@@ -35,9 +37,30 @@ const parseArgumentsIntoOpts = (rawArgs) => {
   }
 }
 
-const convertCSS = (cssFile, options) => {
+export function cli(args) {
+  let options = parseArgumentsIntoOpts(args)
+  if (!options.type) {
+    log(displayInfo('You did not specify --type. CSS will be used as the default type', 'normal'))
+  } else {
+    const type = options.type.toLowerCase()
+    if (type == 'css') {
+      convertCSS(options.source, options, type)
+    } else if (type == 'scss') {
+      transformSCSS(options.source, options)
+    }
+  }
+
+}
+
+function getFileStream(cssFile, options) {
+  let stream = fs.createReadStream(cssFile, { encoding: 'utf-8', ...options })
+  return stream;
+}
+
+function convertCSS(cssFile, options) {
+  let stream;
   try {
-    let stream = fs.createReadStream(cssFile, { encoding: 'utf-8' })
+    stream = fs.createReadStream(cssFile, { encoding: 'utf-8' })
     stream.on('data', (data) => {
       let cssString = CSSOM.parse(data)
 
@@ -62,7 +85,11 @@ const convertCSS = (cssFile, options) => {
       }
     })
     stream.read()
-  } catch (error) {}
+  } catch (error) {
+
+  } finally {
+
+  }
 }
 
 const writeToFile = (file, component) => {
@@ -77,11 +104,61 @@ const writeToFile = (file, component) => {
   })
 }
 
-export const cli = (args) => {
-  let options = parseArgumentsIntoOpts(args)
-  if (!options.type) {
-    log(displayInfo('You did not specify --type. CSS will be used as the default type', 'normal'))
-    process.exit(1)
+function transformSCSS(filePath, options) {
+  try {
+    const dataStream = getFileStream(filePath, options)
+    dataStream.on('data', (data) => {
+      const ast = scssParser.parse(data)
+      let $ = createQueryWrapper(ast)
+
+      let nodes = []
+      let node = null
+
+      // console.log($('rule').eq(0))
+
+      // console.log($('rule'))
+
+      const rules = []
+
+      // console.log($('selector').value());
+
+      const selectors = $('selector')
+        .map((n) => n.node.value.find((v) => v.type == 'identifier'))
+        .map((v) => ({ selector: v.value }))
+
+      const declarations = $('declaration')
+        .map((n) => {
+          let obj = {}
+
+          const objs = n.node.value.map(d => {
+            if (d.type === 'property') {
+              obj.prop = d.value.find(v => v.type == 'identifier').value
+            } else if (d.type === 'value') {
+              const units = d.value.find(v => v.type == 'number')
+              const charValue = d.value.find(v => v.type == 'identifier')
+
+              if (units && charValue) {
+                obj.value = units.value + charValue.value
+              } else if (units) {
+                obj.value = units.value;
+              } else {
+                obj.value = charValue.value;
+              }
+
+              return obj;
+            }
+          })
+
+          return objs
+        })
+        .reduce((acc, item) => acc.concat(item), [])
+        .filter(Boolean)
+
+      console.log(declarations)
+    })
+    dataStream.read()
+  } catch (e) {
+
   }
-  convertCSS(options.source, options)
+
 }

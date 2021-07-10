@@ -109,3 +109,4 @@ dist
 # project test artifacts
 src/file.css
 hello.js
+src/file.scss
