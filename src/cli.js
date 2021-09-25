@@ -1,25 +1,28 @@
 import arg from 'arg'
-import path from 'path'
 import fs from 'fs'
 import CSSOM from 'cssom'
 import { generateStyles, generateStyledComponents, displayInfo } from './utils'
+import { version } from '../package.json'
 
 const log = console.log
 
-function parseArgumentsIntoOpts(rawArgs) {
+const parseArgumentsIntoOpts = (rawArgs) => {
   const args = arg(
     {
       '--type': String,
       '--quiet': Boolean,
       '--source': String,
       '--dest': String,
+      '--version': String,
       '-t': '--type',
       '-q': '--quiet',
       '-s': '--source',
-      '-d': '--dest'
+      '-d': '--dest',
+      '--version': version
     },
     {
-      argv: rawArgs.slice(2)
+      argv: rawArgs.slice(2),
+      permissive: true
     }
   )
 
@@ -27,19 +30,12 @@ function parseArgumentsIntoOpts(rawArgs) {
     type: args['--type'],
     quiet: args['--quiet'] || false,
     source: args['--source'],
-    dest: args['--dest']
+    dest: args['--dest'],
+    version
   }
 }
 
-export function cli(args) {
-  let options = parseArgumentsIntoOpts(args)
-  if (!options.type) {
-    log(displayInfo('You did not specify --type. CSS will be used as the default type', 'normal'))
-  }
-  convertCSS(options.source, options)
-}
-
-function convertCSS(cssFile, options) {
+const convertCSS = (cssFile, options) => {
   try {
     let stream = fs.createReadStream(cssFile, { encoding: 'utf-8' })
     stream.on('data', (data) => {
@@ -66,12 +62,10 @@ function convertCSS(cssFile, options) {
       }
     })
     stream.read()
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
 
-function writeToFile(file, component) {
+const writeToFile = (file, component) => {
   const destination = fs.createWriteStream(file)
   destination.write(component, 'utf-8', (error) => {
     if (error) {
@@ -81,4 +75,13 @@ function writeToFile(file, component) {
     }
     destination.close()
   })
+}
+
+export const cli = (args) => {
+  let options = parseArgumentsIntoOpts(args)
+  if (!options.type) {
+    log(displayInfo('You did not specify --type. CSS will be used as the default type', 'normal'))
+    process.exit(1)
+  }
+  convertCSS(options.source, options)
 }
