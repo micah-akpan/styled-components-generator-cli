@@ -3,13 +3,13 @@ import fs from 'fs'
 import CSSOM from 'cssom'
 import { generateStyles, generateStyledComponents, displayInfo } from './utils'
 import { version } from '../package.json'
+import sass from 'node-sass'
 
 const log = console.log
 
 const parseArgumentsIntoOpts = (rawArgs) => {
   const args = arg(
     {
-      '--type': String,
       '--quiet': Boolean,
       '--source': String,
       '--dest': String,
@@ -27,7 +27,6 @@ const parseArgumentsIntoOpts = (rawArgs) => {
   )
 
   return {
-    type: args['--type'],
     quiet: args['--quiet'] || false,
     source: args['--source'],
     dest: args['--dest'],
@@ -35,34 +34,24 @@ const parseArgumentsIntoOpts = (rawArgs) => {
   }
 }
 
-const convertCSS = (cssFile, options) => {
+const convertToStyledComponents = (cssFile, options) => {
   try {
-    let stream = fs.createReadStream(cssFile, { encoding: 'utf-8' })
-    stream.on('data', (data) => {
-      let cssString = CSSOM.parse(data)
+    let cssString = CSSOM.parse(cssFile)
 
-      const styles = generateStyles(cssString.cssRules)
-      const components = generateStyledComponents(styles)
+    const styles = generateStyles(cssString.cssRules)
+    const components = generateStyledComponents(styles)
 
-      const componentStr = components.join('\n')
+    const componentStr = components.join('\n')
 
-      if (options.dest) {
-        writeToFile(options.dest, componentStr)
-        return;
-      }
+    if (options.dest) {
+      writeToFile(options.dest, componentStr)
+      return;
+    }
 
-      log(displayInfo(componentStr, 'normal'))
-    })
-
-    stream.on('error', (err) => {
-      if (err.code == 'ENOENT') {
-        log(displayInfo('the provided file does not exist. please check the path and try again'))
-      } else if (err.code == 'EACCES') {
-        log(displayInfo('You do not have the necessary permission to this file'))
-      }
-    })
-    stream.read()
-  } catch (error) {}
+    log(displayInfo(componentStr, 'normal'))
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const writeToFile = (file, component) => {
@@ -79,9 +68,18 @@ const writeToFile = (file, component) => {
 
 export const cli = (args) => {
   let options = parseArgumentsIntoOpts(args)
-  if (!options.type) {
-    log(displayInfo('You did not specify --type. CSS will be used as the default type', 'normal'))
+  if (!options.source) {
+    log(displayInfo('Please provide a css, scss or less file path', 'normal'))
     process.exit(1)
   }
-  convertCSS(options.source, options)
+  try {
+    const { css } = sass.renderSync({
+      file: options.source,
+      outputStyle: 'expanded'
+    })
+
+    convertToStyledComponents(css.toString('utf-8'), options)
+  } catch (error) {
+    log(displayInfo(error, 'error'))
+  }
 }
