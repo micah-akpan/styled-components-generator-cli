@@ -34,25 +34,7 @@ const parseArgumentsIntoOpts = (rawArgs) => {
   }
 }
 
-export function cli(args) {
-  let options = parseArgumentsIntoOpts(args)
-  if (!options.source) {
-    log(displayInfo('Please provide a css, scss or less file path', 'normal'))
-    process.exit(1)
-  }
-  try {
-    const { css } = sass.renderSync({
-      file: options.source,
-      outputStyle: 'expanded'
-    })
-
-    convertToStyledComponents(css.toString('utf-8'), options)
-  } catch (error) {
-    log(displayInfo(error, 'error'))
-  }
-}
-
-function convertToStyledComponents(cssFile, options) {
+const convertToStyledComponents = (cssFile, options) => {
   try {
     let cssString = CSSOM.parse(cssFile)
 
@@ -82,4 +64,22 @@ const writeToFile = (file, component) => {
     }
     destination.close()
   })
+}
+
+export const cli = (args) => {
+  let options = parseArgumentsIntoOpts(args)
+  if (!options.source) {
+    log(displayInfo('Please provide a css, scss or less file path', 'normal'))
+    process.exit(1)
+  }
+  try {
+    const { css } = sass.renderSync({
+      file: options.source,
+      outputStyle: 'expanded'
+    })
+
+    convertToStyledComponents(css.toString('utf-8'), options)
+  } catch (error) {
+    log(displayInfo(error, 'error'))
+  }
 }
