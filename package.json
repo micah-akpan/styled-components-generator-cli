@@ -1,0 +1,36 @@
+{
+  "name": "styled-components-generator-cli",
+  "version": "1.0.0",
+  "description": "An intuitive tool to migrate stylesheet written in several CSS dialects to Styled Components",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/micah-akpan/styled-components-generator-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/micah-akpan/styled-components-generator-cli/issues"
+  },
+  "homepage": "https://github.com/micah-akpan/styled-components-generator-cli#readme",
+  "dependencies": {
+    "arg": "^5.0.0",
+    "chalk": "^4.1.1",
+    "cssom": "^0.5.0",
+    "esm": "^3.2.25",
+    "node-sass": "^6.0.1"
+  },
+  "bin": {
+    "@your_npm_username/sc-gen": "bin/sc-gen",
+    "sc-gen": "bin/sc-gen"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "jest": "^27.0.6"
+  }
+}

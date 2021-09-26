@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+# project roadmap
+.roadmap
+
+# project test artifacts
+src/file.css
+hello.js
+src/file.scss
