@@ -117,4 +117,11 @@ describe('Utils', () => {
       expect(selector).toEqual('selector')
     })
   })
+
+  describe('toSentenceCase', () => {
+    test('should convert selectors to title case', () => {
+      let sentenceCased = Utils.toSentenceCase('headerComponent')
+      expect(sentenceCased).toEqual('HeaderComponent')
+    })
+  })
 })

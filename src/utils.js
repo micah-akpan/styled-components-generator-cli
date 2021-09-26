@@ -15,20 +15,19 @@ export const getDeclarations = (ruleStyle) => {
   return declarations;
 }
 
-export const generateStyles = (rules) => {
-  // returns a map of selectors to their respective declarations
-  return rules.map((rule) => ({
+export const generateStyles = (rules) => (
+  rules.map((rule) => ({
     selector: rule.selectorText,
     declarations: getDeclarations(rule.style)
   }))
-}
+)
 
 export const generateStyledComponents = (styles) => {
   let components = []
   for (let i = 0; i < styles.length; i++) {
     let style = styles[i]
     let selector = removePrefixInSelector(getLastSelector(style.selector))
-    let component = `const ${selector}Component = styled.${selector}\`
+    let component = `const ${toSentenceCase(selector)}Component = styled.${selector}\`
     ${style.declarations.map(declaration => {
       return `\t${declaration.prop}: ${declaration.value};`
     }).join('\n')}
@@ -59,3 +58,5 @@ export const removePrefixInSelector = (selector) => {
   const classIDPrefixRegExp = /[.|#]/
   return selector.replace(classIDPrefixRegExp, '')
 }
+
+export const toSentenceCase = (text) => `${text.charAt(0).toUpperCase()}${text.substring(1)}`

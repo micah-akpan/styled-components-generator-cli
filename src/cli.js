@@ -14,7 +14,6 @@ const parseArgumentsIntoOpts = (rawArgs) => {
       '--source': String,
       '--dest': String,
       '--version': String,
-      '-t': '--type',
       '-q': '--quiet',
       '-s': '--source',
       '-d': '--dest',
