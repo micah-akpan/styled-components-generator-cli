@@ -40,18 +40,18 @@ jobs:
         npm test
       
     # Publish to npm registry
-    - run: npm publish
-      if: github.event_name == 'pull_request'
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_SECRET_NEW }}
+    # - run: npm publish
+    #   if: github.event_name == 'pull_request'
+    #   env:
+    #     NODE_AUTH_TOKEN: ${{ secrets.NPM_SECRET_NEW }}
 
     # Setup .npmrc file to publish to GitHub Packages
-    - uses: actions/setup-node@v2
-      with:
-        registry-url: 'https://npm.pkg.github.com'
+    # - uses: actions/setup-node@v2
+    #   with:
+    #     registry-url: 'https://npm.pkg.github.com'
   
-    # Publish to GitHub Packages
-    - run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # # Publish to GitHub Packages
+    # - run: npm publish
+    #   env:
+    #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
