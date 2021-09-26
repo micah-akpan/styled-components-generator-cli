@@ -1,5 +1,5 @@
 {
-  "name": "styled-components-generator-cli",
+  "name": "sc-gen",
   "version": "1.0.0",
   "description": "An intuitive tool to migrate stylesheet written in several CSS dialects to Styled Components",
   "main": "index.js",
