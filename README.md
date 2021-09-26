@@ -1,6 +1,9 @@
 # sc-gen
 sc-gen is a tool to migrate stylesheets written in several CSS dialects to Styled Components. sc-gen can transform your less, css or scss files to use the styled components styling pattern.
 
+
+[![sc-gen CI](https://github.com/micah-akpan/styled-components-generator-cli/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/micah-akpan/styled-components-generator-cli/actions/workflows/node.js.yml)
+
 # Installation
 Using [npm](http://npmjs.org)
 
